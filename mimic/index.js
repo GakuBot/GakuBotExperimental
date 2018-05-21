@@ -1,30 +1,55 @@
 let mimic = new Mimic();
-var Network = synaptic.Network;
 mimic.generatePopulation();
 
 const savedMimicRaw = localStorage.getItem('mimic');
 const savedMimicOpponentNetworkRaw = localStorage.getItem('mimicOpponentNetwork');
 const savedEvolutionIteration = localStorage.getItem('mimicEvolutionIteration');
 
-const isSavedDataAvailable = notUndefinedOrNull(savedMimicRaw)
-                            && notUndefinedOrNull(savedMimicOpponentNetworkRaw)
-                            && notUndefinedOrNull(savedEvolutionIteration);
-
-function notUndefinedOrNull(input){
-  return typeof input !== "undefined" && input !== null;
-}
-
-
+// If a way to save the network is found, uncomment below
+// const isSavedDataAvailable = notUndefinedOrNull(savedMimicRaw)
+//                             && notUndefinedOrNull(savedMimicOpponentNetworkRaw)
+//                             && notUndefinedOrNull(savedEvolutionIteration);
+//
+// function notUndefinedOrNull(input){
+//   return typeof input !== "undefined" && input !== null;
+// }
 // If a way to save the network is found, uncomment below
 // function loadSavedMimicData(){
 //   const savedMimic = JSON.parse(savedMimicRaw);
 //   const savedMimicOpponentNeat = JSON.parse(savedMimicOpponentNetworkRaw);
+//   var Network = synaptic.Network;
 //
 //   mimic["noOfWins"] = parseInt(savedMimic["noOfWins"]);
 //   mimic["noOfLosses"] = parseInt(savedMimic["noOfLosses"]);
 //   mimic["opponentNetwork"] = Network.fromJSON(savedMimicOpponentNeat);
 //   mimic["evolutionIteration"] = parseInt(savedEvolutionIteration);
 // }
+
+// If a way to save the network is found, uncomment below
+// if(isSavedDataAvailable){
+//   pageNumberLimit = 5;
+//   headerText.splice(0, 0, "Save Data");
+//   titleText.splice(0, 0, "Local saved data has been detected");
+//   contentText.splice(0, 0, "Would you like to load previously saved data?");
+//   buttonText.splice(0, 0, "No");
+//   document.getElementById("progress-button-load").classList.remove("d-none");
+//   $("#canvas-overlay .card-header h2").html(headerText[pageNumber]);
+//   $("#canvas-overlay .card-title").html(titleText[pageNumber]);
+//   $("#canvas-overlay .card-text").html(contentText[pageNumber]);
+//   $("#canvas-overlay #progress-button").html(buttonText[pageNumber]);
+//
+//   document.getElementById("progress-button-load").addEventListener("click", function(e){
+//     e.preventDefault();
+//     document.getElementById("progress-button-load").classList.add("d-none");
+//     loadSavedMimicData();
+//     pageNumber += 1
+//     $("#canvas-overlay .card-header h2").html(headerText[pageNumber]);
+//     $("#canvas-overlay .card-title").html(titleText[pageNumber]);
+//     $("#canvas-overlay .card-text").html(contentText[pageNumber]);
+//     $("#canvas-overlay #progress-button").html(buttonText[pageNumber]);
+//   });
+// }
+
 
 let iteration = 0;
 let finalOutcome = {};
@@ -51,31 +76,6 @@ const buttonText = ["Rules ▶", "Guide ▶", "Strategy ▶", "Versions ▶", "P
 
 let pageNumber = 0;
 let pageNumberLimit = 4;
-
-// If a way to save the network is found, uncomment below
-// if(isSavedDataAvailable){
-//   pageNumberLimit = 5;
-//   headerText.splice(0, 0, "Save Data");
-//   titleText.splice(0, 0, "Local saved data has been detected");
-//   contentText.splice(0, 0, "Would you like to load previously saved data?");
-//   buttonText.splice(0, 0, "No");
-//   document.getElementById("progress-button-load").classList.remove("d-none");
-//   $("#canvas-overlay .card-header h2").html(headerText[pageNumber]);
-//   $("#canvas-overlay .card-title").html(titleText[pageNumber]);
-//   $("#canvas-overlay .card-text").html(contentText[pageNumber]);
-//   $("#canvas-overlay #progress-button").html(buttonText[pageNumber]);
-//
-//   document.getElementById("progress-button-load").addEventListener("click", function(e){
-//     e.preventDefault();
-//     document.getElementById("progress-button-load").classList.add("d-none");
-//     loadSavedMimicData();
-//     pageNumber += 1
-//     $("#canvas-overlay .card-header h2").html(headerText[pageNumber]);
-//     $("#canvas-overlay .card-title").html(titleText[pageNumber]);
-//     $("#canvas-overlay .card-text").html(contentText[pageNumber]);
-//     $("#canvas-overlay #progress-button").html(buttonText[pageNumber]);
-//   });
-// }
 
 var trainDataPlayHuman = function(){
   if(mimic.currentRound < 1){
@@ -121,6 +121,7 @@ var roundOver = function(){
   // localStorage.setItem('mimicEvolutionIteration', mimic.currentGen);
 
   document.getElementById("continue-canvas-overlay").classList.remove("d-none");
+  document.getElementById("play-again-button").disabled = true;
   document.getElementById("post-game-message-title").innerHTML = noOfWins > noOfLosses ? "You're on top!" : "Keep going!";
   document.getElementById("post-game-message").innerHTML = noOfWins > noOfLosses ? "You currently have more wins than losses: that's great! Keep playing to see the AI get better." : "You currently don't have more wins than losses. Keep playing to try and get the better of the AI.";
   document.getElementById("post-game-results-played").innerHTML =  "Played: " + noOfGames;

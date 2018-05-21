@@ -1,28 +1,28 @@
 var Architect = synaptic.Architect;
+var Trainer = synaptic.Trainer;
 
 function Mimic(){
   return{
-  opponentNetwork: null, // https://wagenaartje.github.io/neataptic/docs/neat/
+  opponentNetwork: null,
   startingInput: [],
   startingOpponentInput: [],
   userControlled: false,
-  timeSteps: 110,
+  timeSteps: 220,
   maxInitialDistance: 20,
-  minDistance: 1.9,
-  tagDistance: 1.5,
-  cooldownTimer: 20,
-  startDelay: 50,
-  maxSpeed: 0.2,
-  countdown: 5,
+  minDistance: 2.4,
+  tagDistance: 1.8,
+  cooldownTimer: 50,
+  startDelay: 100,
+  maxSpeed: 0.1,
   playerCooldown: 0,
   opponentCooldown: 0,
   finishTimer: 0,
   zoomCoefficient: 1.6,
   screenXOffset: 0.5,
   screenYOffset: 0.8,
-  finishTimerDuration: 30,
+  finishTimerDuration: 60,
   animationTimer: 0,
-  timeLimit: 400,
+  timeLimit: 800,
   duelCounter: 0,
   gameResultWin: false,
   gameResultLoss: false,
@@ -35,7 +35,7 @@ function Mimic(){
   currentOpponentPosition: [],
   trainingData: [],
   generatePopulation: function () {
-    this.opponentNetwork = new Architect.Liquid(6, 25, 2, 50, 20);
+    this.opponentNetwork = new Architect.Liquid(6, 30, 2, 50, 25);
 
     this.trainingData = mimicTrainingData; //initial training data just to get the thing started (1 round x 5 goes)
   },
@@ -56,27 +56,37 @@ function Mimic(){
 
   },
   duel: function(){
-    const isGenerationFinished = this.currentRound % 5 == 0;
+    let isGenerationFinished;
+    isGenerationFinished = this.currentRound % 5 == 0;
+    if(this.currentRound == 5){
+      this.currentRound = 6;
+      isGenerationFinished = true;
+    }
+
+    if(this.currentRound < 5){
+      isGenerationFinished = false;
+    }
+
     const isMatchFinished = this.animationTimer >= this.timeLimit || this.finishLoop;
     const isStart = this.animationTimer <= this.startDelay;
 
-    if(!isMatchFinished && !isStart){
+    if(!isGenerationFinished && !isMatchFinished && !isStart){
       this.animationTimer++
 
       this.timeStep();
       this.drawMovement();
 
       var thisGenetic = this;
-      setTimeout(function(){thisGenetic.duel() }, 30);
-    }else if(!isMatchFinished && isStart){
+      requestAnimationFrame(function(){thisGenetic.duel() });
+    }else if(!isGenerationFinished && !isMatchFinished && isStart){
       this.animationTimer++
 
       this.drawMovement();
       this.drawPregameOverlay();
 
       var thisGenetic = this;
-      setTimeout(function(){thisGenetic.duel() }, 30);
-    } else if(this.finishTimer < this.finishTimerDuration){
+      requestAnimationFrame(function(){thisGenetic.duel() });
+    } else if(!isGenerationFinished && this.finishTimer < this.finishTimerDuration){
       if(this.finishTimer === 0 && this.animationTimer >= this.timeLimit){
           this.gameResultWin = false;
           this.gameResultLoss = this.userControlled === true;
@@ -87,20 +97,25 @@ function Mimic(){
       this.drawMovement();
 
       var thisGenetic = this;
-      setTimeout(function(){thisGenetic.duel() }, 30);
+      requestAnimationFrame(function(){thisGenetic.duel() });
     }else if(!isGenerationFinished){
       this.finishTimer = 0;
       this.drawMovement();
       this.prepareDuel();
     }else{
       this.finishTimer = 0;
+      roundOver();
       this.evolve();
       this.trainingData = [];
-      roundOver();
     }
   },
   setInitialPositionValue: function(){
-    const playerStartingBearing = 3 * Math.PI/2 + (2 * Math.PI/10  - Math.PI/10) * (2 * Math.round(Math.random()) - 1);
+    let playerStartingBearing;
+    if(screenRatio > 1){
+      playerStartingBearing = 3 * Math.PI/2 + (Math.PI/10) * (Math.round(4 * Math.random()) - 2);
+    }else{
+      playerStartingBearing = 3 * Math.PI/2 + (Math.PI/10) * (Math.round(2 * Math.random()) - 1);
+    }
     const opponentStartingBearingPlusMinus = playerStartingBearing > 3 * Math.PI/2 ? -1 : 1;
     const opponentStartingBearing = playerStartingBearing + opponentStartingBearingPlusMinus * (Math.PI / 10);
 
@@ -126,13 +141,13 @@ function Mimic(){
   },
   makeRatioASimulationPosition: function(ratio){
     simPosition = [];
-    simPosition[0] = (ratio[0] - this.screenXOffset) * (this.zoomCoefficient * this.maxInitialDistance * desiredScreenRatio);
+    simPosition[0] = (ratio[0] - this.screenXOffset) * (this.zoomCoefficient * this.maxInitialDistance * screenRatio);
     simPosition[1] = (ratio[1] - this.screenYOffset) * (this.zoomCoefficient * this.maxInitialDistance);
     return simPosition;
   },
   makeSimulationPositionARatio: function(simPosition){
     ratio = [];
-    ratio[0] = simPosition[0] / (this.zoomCoefficient * this.maxInitialDistance * desiredScreenRatio);
+    ratio[0] = simPosition[0] / (this.zoomCoefficient * this.maxInitialDistance * screenRatio);
     ratio[1] = simPosition[1] / (this.zoomCoefficient * this.maxInitialDistance);
     return ratio;
   },
@@ -144,7 +159,8 @@ function Mimic(){
 
     let ratioCoords;
     if(userNavigation.length > 0){
-      ratioCoords = canvasCoordinatesToCanvasRatio(userNavigation);
+      const draw = new Draw();
+      ratioCoords = draw.canvasCoordinatesToCanvasRatio(userNavigation);
       output[0] = this.makeRatioASimulationPosition(ratioCoords)[0] - this.currentPosition[0];
       output[1] = this.makeRatioASimulationPosition(ratioCoords)[1] - this.currentPosition[1];
     }else{
@@ -257,40 +273,48 @@ function Mimic(){
     const xOpponentPosition = this.makeSimulationPositionARatio(opponentPositionThisFrame)[0];
     const yOpponentPosition = this.makeSimulationPositionARatio(opponentPositionThisFrame)[1];
 
-    if(userNavigation.length === 2 && this.userControlled){
-      const userTarget = canvasCoordinatesToCanvasRatio(userNavigation);
-      clearCanvas();
-      if(this.finishTimer > 0){
-        drawFinish(this.screenXOffset, this.screenYOffset, this.finishTimer, this.finishTimerDuration, this.gameResultWin, this.gameResultLoss);
-      }
-      drawFourCircles(this.screenXOffset, this.screenYOffset, xPosition + this.screenXOffset, yPosition + this.screenYOffset, xOpponentPosition + this.screenXOffset, yOpponentPosition + this.screenYOffset, userTarget[0], userTarget[1], this.playerCooldown, this.opponentCooldown);
-      drawGenerationText(this.currentGeneration);
-    }else{
-      clearCanvas();
-      if(this.finishTimer > 0){
-        drawFinish(this.screenXOffset, this.screenYOffset, this.finishTimer, this.finishTimerDuration, this.gameResultWin, this.gameResultLoss);
-      }
-      drawThreeCircles(this.screenXOffset, this.screenYOffset, xPosition + this.screenXOffset, yPosition + this.screenYOffset, xOpponentPosition + this.screenXOffset, yOpponentPosition + this.screenYOffset, this.playerCooldown, this.opponentCooldown);
-      drawGenerationText(this.currentGeneration);
+    const draw = new Draw();
+
+    draw.clearCanvas();
+
+    if(this.finishTimer > 0){
+      draw.drawFinish(this.screenXOffset, this.screenYOffset, this.finishTimer, this.finishTimerDuration, this.gameResultWin, this.gameResultLoss, this.noOfWins, this.noOfLosses);
     }
+
+    if(userNavigation.length === 2 && this.userControlled){
+      const userTarget = draw.canvasCoordinatesToCanvasRatio(userNavigation);
+      draw.drawPlayersAndObjectiveWithTarget(this.screenXOffset, this.screenYOffset, xPosition + this.screenXOffset, yPosition + this.screenYOffset, xOpponentPosition + this.screenXOffset, yOpponentPosition + this.screenYOffset, userTarget[0], userTarget[1], this.playerCooldown, this.opponentCooldown, this.noOfWins, this.noOfLosses);
+    }else{
+      draw.drawPlayersAndObjectiveNoTarget(this.screenXOffset, this.screenYOffset, xPosition + this.screenXOffset, yPosition + this.screenYOffset, xOpponentPosition + this.screenXOffset, yOpponentPosition + this.screenYOffset, this.playerCooldown, this.opponentCooldown, this.noOfWins, this.noOfLosses);
+    }
+
+    draw.drawGenerationText(this.currentGeneration);
   },
   drawPregameOverlay: function(){
-    const pregameTimer = 4 - Math.ceil((this.animationTimer / this.startDelay) * 3);
-    const pregameTimerRaw = 4 - (this.animationTimer / this.startDelay) * 3;
-    drawPregameOverlayText(pregameTimer, 255 - Math.round(255 * (pregameTimerRaw - pregameTimer)));
+    const pregameCountupTimer = Math.ceil(3 * (this.animationTimer / this.startDelay));
+    const pregameCountdownTimer = 4 - pregameCountupTimer;
+    const timerDifference = pregameCountupTimer - 3 * (this.animationTimer / this.startDelay);
+    const draw = new Draw();
+    draw.drawPregameOverlayText(pregameCountdownTimer, timerDifference);
   },
   evolve: function () {
     const learningRate = .3;
-    const noOfRepetitions = 250;
+    const noOfRepetitions = this.currentRound < 5 ? 500 : 250;
 
     this.currentGeneration++;
 
-    for(let repetition = 0; repetition < noOfRepetitions; repetition++){
-      for(let i in this.trainingData){
-        this.opponentNetwork.activate(this.trainingData[i].input);
-        this.opponentNetwork.propagate(learningRate, this.trainingData[i].output);
-      }
-    }
+    console.log(JSON.stringify(this.trainingData));
+
+    var trainer = new Trainer(this.opponentNetwork);
+      trainer.train(this.trainingData, {
+        rate: learningRate,
+        iterations: noOfRepetitions,
+        error: .005,
+        shuffle: true,
+        cost: Trainer.cost.MSE
+    });
+
+    document.getElementById("play-again-button").disabled = false;
   }
 }
 }
