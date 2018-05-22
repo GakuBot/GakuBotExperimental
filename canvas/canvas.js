@@ -18,6 +18,7 @@ function Canvas(canvas) {
     // Draw a circle
     this.line = function(x, y, i, j) {
         context.beginPath();
+        context.lineWidth = 6;
         context.moveTo(x,y);
         context.lineTo(i,j);
         context.stroke();
@@ -37,7 +38,7 @@ function Canvas(canvas) {
     };
 
     this.textDraw = function(text, positionX, positionY, color) {
-        context.font = (height/20) + "px Arial";
+        context.font = "bold " + (height/20) + "px Bookman";
         context.fillStyle = color;
         context.fillText(text,positionX,positionY)
 
@@ -45,7 +46,7 @@ function Canvas(canvas) {
     };
 
     this.textDrawBig = function(text, positionX, positionY, color) {
-        context.font = (width/12) + "px Arial";
+        context.font = "bold " + (height/12) + "px Bookman";
         context.fillStyle = color;
         context.fillText(text,positionX,positionY)
 
@@ -54,7 +55,8 @@ function Canvas(canvas) {
 
     // Clear entire canvas
     this.clear = function() {
-        context.clearRect(0, 0, width, height);
+        context.fillStyle = "rgb(172, 236, 219)";
+        context.fillRect(0, 0, width, height);
 
         return this;
     };

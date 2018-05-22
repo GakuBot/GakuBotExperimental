@@ -26,35 +26,42 @@
 
 <body>
         <div id="canvas-container" class="canvas-container">
-
           <canvas id="cvs" width="500" height="400" style="height:400px; width:500px; margin:auto; background-color: white;"></canvas>
 
           <div id="canvas-overlay" class="h-100">
-            <div class="card h-100">
-              <div class="card-header">
-                <h2>Gakubot Mimic</h2>
+              <div id="game-menu" class="card h-100 text-center">
+                <div class="card-header">
+                  <h1>Gakubot Mimic</h1>
+                </div>
+                <a id="play-now-button" class="btn btn-primary text-white btn-lg w-75 mx-auto my-3"><h2>Play now</h2></a>
+                <a id="how-to-play-button" class="btn btn-primary text-white btn-lg w-75 mx-auto my-3"><h2>How to play</h2></a>
+                <a id="return-button" href="../index.html" class="btn btn-outline-secondary btn-lg w-75 mx-auto my-3"><h2>Back</h2></a>
               </div>
-              <div class="card-body">
-                <h5 class="card-title">This is a machine learning game</h5>
-                <p class="card-text">You play against the computer, and the computer (theoretically) gets better as you play</p>
+              <div id="how-to-play-explanation" class="card h-100 d-none">
+                <div class="card-header text-center">
+                  <h1>Gakubot Mimic</h1>
+                </div>
+                <div class="card-body">
+                  <h2 class="card-title">This is a machine learning game</h2>
+                  <h4 class="card-text">As you play against the AI, it learns how you play, and begins to play like you</h4>
+                </div>
+                <div class="card-footer ">
+                  <a id="progress-button-load" class="btn btn-primary float-right text-white d-none ml-2 mb-1">Yes</a>
+                  <a id="progress-button" class="btn btn-primary float-right text-white">Rules ▶</a>
+                </div>
               </div>
-              <div class="card-footer">
-                <a id="progress-button-load" class="btn btn-primary float-right text-white d-none ml-2 mb-1">Yes</a>
-                <a id="progress-button" class="btn btn-primary float-right text-white">Rules ▶</a>
-              </div>
-            </div>
           </div>
           <div id="continue-canvas-overlay" class="d-none h-100">
             <div class="card h-100">
               <div class="card-body">
-                <h4 id="post-game-message-title" class="card-title">Observation Completed</h4>
-                <p id="post-game-message" class="card-text">Now we will tell the bot how you played and teach it to play like you.</p>
-                <h5 id="post-game-results-title" class="card-text mt-4">Results:</h5>
+                <h1 id="post-game-message-title" class="card-title"></h2>
+                <h2 id="post-game-message" class="card-text"></h4>
+                <h3 id="post-game-results-title" class="card-text mt-4">Results:</h5>
                 <div id="post-game-results-holder">
-                  <div id="post-game-results-played" class="card-text">Played:</div>
+                  <h4 id="post-game-results-played" class="card-text">Played:</h4>
                   <div>
-                    <div id="post-game-results-won" class="result-text card-text">Won:</div>
-                    <div id="post-game-results-lost" class="result-text card-text text-right float-right">Lost:</div>
+                    <h4 id="post-game-results-won" class="result-text card-text">Won:</h4>
+                    <h4 id="post-game-results-lost" class="result-text card-text text-right float-right">Lost:</h4>
                   </div>
                   <div>
                     <div id="post-game-results-won-bar" class="result-bar float-left"></div>
@@ -67,6 +74,8 @@
               </div>
             </div>
           </div>
+
+            <a id="menu-button" class="btn btn-outline-secondary float-right btn-lg w-75 mx-auto my-3" style="z-index:100000000"><h2>Menu</h2></a>
         </div>
 
   <script src="../jquery_bootstrap/jquery.js"></script>

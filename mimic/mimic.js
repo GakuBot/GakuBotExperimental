@@ -68,7 +68,7 @@ function Mimic(){
     }
 
     const isMatchFinished = this.animationTimer >= this.timeLimit || this.finishLoop;
-    const isStart = this.animationTimer <= this.startDelay;
+    const isStart = this.animationTimer < this.startDelay;
 
     if(!isGenerationFinished && !isMatchFinished && !isStart){
       this.animationTimer++
@@ -291,7 +291,10 @@ function Mimic(){
     draw.drawGenerationText(this.currentGeneration);
   },
   drawPregameOverlay: function(){
-    const pregameCountupTimer = Math.ceil(3 * (this.animationTimer / this.startDelay));
+    let pregameCountupTimer = Math.ceil(3 * (this.animationTimer / this.startDelay));
+    if(pregameCountupTimer === 4){
+      pregameCountupTimer = 3
+    }
     const pregameCountdownTimer = 4 - pregameCountupTimer;
     const timerDifference = pregameCountupTimer - 3 * (this.animationTimer / this.startDelay);
     const draw = new Draw();

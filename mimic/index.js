@@ -61,7 +61,7 @@ let movementProcess;
 
 const headerText = ["Gakubot Mimic", "Rules", "How to play", "Strategy", "Other versions"];
 const titleText = ["This is a machine learning game", "There are three main rules to this game", "Movement", "How will you play?", ""];
-const contentText = ["You play against the computer, and the computer (theoretically) gets better as you play",
+const contentText = ["As you play against the AI, it learns how you play, and begins to play like you",
 "<ol>\
   <li>You are a yellow circle. Your aim is to get home to the brown circle in the middle.</li>\
   <li>You need to get home before your opponent, a pink circle. If the pink circle gets home first, you lose.</li>\
@@ -72,7 +72,7 @@ const contentText = ["You play against the computer, and the computer (theoretic
 "If you would like to relax and watch two computers duel it out instead, then please feel free to try <a href='../exhibit/exhibit.html'>Gakubot Exhibit</a><br><br>\
  If you want to teach the bots how you play by playing against them, try <a href='../apprentice/apprentice.html'>Gakubot Apprentice</a><br><br>\
  If you want to go head to head against bots who practice hours of simulated games in minutes, then check out <a href='../formulate/formulate.html'>Gakubot Formulate</a>"];
-const buttonText = ["Rules ▶", "Guide ▶", "Strategy ▶", "Versions ▶", "Play"];
+const buttonText = ["Rules ▶", "Guide ▶", "Strategy ▶", "Versions ▶", "Menu"];
 
 let pageNumber = 0;
 let pageNumberLimit = 4;
@@ -91,16 +91,16 @@ var trainDataPlayHuman = function(){
 document.getElementById("progress-button").addEventListener("click", function(e){
   e.preventDefault();
   if(pageNumber < pageNumberLimit){
-    document.getElementById("progress-button-load").classList.add("d-none");
     pageNumber += 1
     $("#canvas-overlay .card-header h2").html(headerText[pageNumber]);
     $("#canvas-overlay .card-title").html(titleText[pageNumber]);
     $("#canvas-overlay .card-text").html(contentText[pageNumber]);
     $("#canvas-overlay #progress-button").html(buttonText[pageNumber]);
   }else{
-    $("#canvas-overlay").hide();
-    trainDataPlayHuman();
+    pageNumber = 0;
+    howToPlayToMenuScreen();
   }
+
 });
 
 document.getElementById("play-again-button").addEventListener("click", function(e){
@@ -108,6 +108,32 @@ document.getElementById("play-again-button").addEventListener("click", function(
   document.getElementById("continue-canvas-overlay").classList.add("d-none");
   trainDataPlayHuman();
 });
+
+document.getElementById("play-now-button").addEventListener("click", function(e){
+  e.preventDefault();
+  howToPlayToMenuScreen();
+  $("#canvas-overlay").hide();
+  trainDataPlayHuman();
+});
+
+document.getElementById("how-to-play-button").addEventListener("click", function(e){
+  e.preventDefault();
+  $("#canvas-overlay .card-header h2").html(headerText[pageNumber]);
+  $("#canvas-overlay .card-title").html(titleText[pageNumber]);
+  $("#canvas-overlay .card-text").html(contentText[pageNumber]);
+  $("#canvas-overlay #progress-button").html(buttonText[pageNumber]);
+  menuToHowToPlayScreen();
+});
+
+var menuToHowToPlayScreen = function(){
+  document.getElementById("game-menu").classList.add("d-none");
+  document.getElementById("how-to-play-explanation").classList.remove("d-none");
+}
+
+var howToPlayToMenuScreen = function(){
+  document.getElementById("how-to-play-explanation").classList.add("d-none");
+  document.getElementById("game-menu").classList.remove("d-none");
+}
 
 var roundOver = function(){
   const gameResult = mimic.gameResultWin;

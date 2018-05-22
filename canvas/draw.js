@@ -1,8 +1,10 @@
 var cvs = document.getElementById('cvs');
 
 let screenRatio = 1;
+let playerTrail = [];
+let opponentTrail = [];
 
-function determineOpponentColour(noOfWins, noOfLosses, cooldown){
+function determineOpponentColour(noOfWins, noOfLosses, cooldown, opacity){
   const majorityWin = noOfWins > noOfLosses;
   const colourDiff = Math.abs(noOfWins - noOfLosses) < 50 ? noOfWins - noOfLosses : majorityWin ? 50 : -50;
   let hueValue = 350 - colourDiff;
@@ -12,12 +14,16 @@ function determineOpponentColour(noOfWins, noOfLosses, cooldown){
   const satValue = cooldown <= 0 ? 100 : 40;
   const lightValue = cooldown <= 0 ? 80 : 60;
 
-  return "hsl(" + hueValue + ","+ satValue +"%," + lightValue + "%)"
+  return "hsla(" + hueValue + ","+ satValue +"%," + lightValue + "%, "+ opacity +")"
+}
+
+function determinePlayerColour(opacity){
+  return "rgba(223, 193, 42,"+opacity+")"
 }
 
 function Draw() {
 
-  const userDefaultColor = "#dfc12a";
+  const userDefaultColor = determinePlayerColour(1);
 
   this.resize = function(){
     let windowHeight = window.innerHeight;
@@ -51,17 +57,36 @@ function Draw() {
       const smallCircleRadius = height/35;
       const largeCircleRadius = height/23;
       const playerColor = playerCooldown <= 0 ? userDefaultColor : "rgb(100, 100, 0)";
-      const opponentColor = determineOpponentColour(noOfWins, noOfLosses, opponentCooldown);
+      const opponentColor = determineOpponentColour(noOfWins, noOfLosses, opponentCooldown, 1);
       const normalLineThickness = 1;
       const extraThickLine = 7;
+
+      if(playerTrail.length > 50){
+        playerTrail.pop();
+      }
+
+      if(opponentTrail.length > 50){
+        opponentTrail.pop();
+      }
+
+      playerTrail.unshift([secondX, secondY]);
+      opponentTrail.unshift([thirdX, thirdY]);
 
       const canvas = new Canvas(cvs);
       canvas.setColor("fill", "brown").setColor("stroke", "brown").circle(firstX,firstY,largeCircleRadius, extraThickLine,false,true);
       canvas.setColor("fill", "brown").setColor("stroke", "brown").circle(firstX,firstY,largeCircleRadius/1.2, extraThickLine,false,true);
       canvas.setColor("fill", "brown").setColor("stroke", "brown").circle(firstX,firstY,largeCircleRadius/1.5, extraThickLine,false,true);
       canvas.setColor("fill", "brown").setColor("stroke", "brown").circle(firstX,firstY,largeCircleRadius/4, extraThickLine,false,true);
+
+      for(let opponentFrameCounter = 1; opponentFrameCounter < opponentTrail.length; opponentFrameCounter++){
+        canvas.setColor("fill", determineOpponentColour(noOfWins, noOfLosses, opponentCooldown, 0.1*(opponentTrail.length - opponentFrameCounter)/opponentTrail.length)).setColor("stroke", "blue").circle(opponentTrail[opponentFrameCounter][0], opponentTrail[opponentFrameCounter][1],smallCircleRadius, normalLineThickness,true,false);
+      }
       canvas.setColor("fill", opponentColor).setColor("stroke", "blue").circle(thirdX, thirdY,smallCircleRadius, normalLineThickness,true,false);
       canvas.setColor("fill", "grey").setColor("stroke", "purple").circle(thirdX, thirdY,tinyCircleRadius, extraThickLine/1.5,false,true);
+
+      for(let playerFrameCounter = 1; playerFrameCounter < playerTrail.length; playerFrameCounter++){
+        canvas.setColor("fill", determinePlayerColour(0.1*(playerTrail.length - playerFrameCounter)/playerTrail.length)).setColor("stroke", "green").circle(playerTrail[playerFrameCounter][0], playerTrail[playerFrameCounter][1],smallCircleRadius, normalLineThickness,true,false);
+      }
       canvas.setColor("fill", playerColor).setColor("stroke", "green").circle(secondX, secondY,smallCircleRadius, normalLineThickness,true,false);
       canvas.setColor("fill", "black").setColor("stroke", "green").circle(secondX, secondY,tinyCircleRadius, normalLineThickness,true,false);
   }
@@ -83,22 +108,47 @@ function Draw() {
       const smallCircleRadius = height/35;
       const largeCircleRadius = height/23;
       const playerColor = playerCooldown <= 0 ? userDefaultColor : "rgb(100, 100, 0)";
-      const opponentColor = determineOpponentColour(noOfWins, noOfLosses, opponentCooldown);
-      const normalLineThickness = 1;
+      const opponentColor = determineOpponentColour(noOfWins, noOfLosses, opponentCooldown, 1);
+      const normalLineThickness = 6;
       const extraThickLine = 7;
+
+      if(playerTrail.length > 50){
+        playerTrail.pop();
+      }
+
+      if(opponentTrail.length > 50){
+        opponentTrail.pop();
+      }
+
+      playerTrail.unshift([secondX, secondY]);
+      opponentTrail.unshift([thirdX, thirdY]);
+
+      const cursorColour = "rgb(223, 193, 42)";
+
 
       const canvas = new Canvas(cvs);
       canvas.setColor("fill", "brown").setColor("stroke", "brown").circle(firstX,firstY,largeCircleRadius, extraThickLine,false,true);
       canvas.setColor("fill", "brown").setColor("stroke", "brown").circle(firstX,firstY,largeCircleRadius/1.2, extraThickLine,false,true);
       canvas.setColor("fill", "brown").setColor("stroke", "brown").circle(firstX,firstY,largeCircleRadius/1.5, extraThickLine,false,true);
       canvas.setColor("fill", "brown").setColor("stroke", "brown").circle(firstX,firstY,largeCircleRadius/4, extraThickLine,false,true);
-      canvas.setColor("fill", "white").setColor("stroke", "red").circle(fourthX, fourthY,smallCircleRadius, normalLineThickness,false,true);
-      canvas.setColor("stroke", "red").line(fourthX, fourthY + smallCircleRadius, fourthX, fourthY + smallCircleRadius/2);
-      canvas.setColor("stroke", "red").line(fourthX, fourthY - smallCircleRadius, fourthX, fourthY - smallCircleRadius/2);
-      canvas.setColor("stroke", "red").line(fourthX + smallCircleRadius, fourthY, fourthX + smallCircleRadius/2, fourthY);
-      canvas.setColor("stroke", "red").line(fourthX - smallCircleRadius, fourthY, fourthX - smallCircleRadius/2, fourthY);
+      canvas.setColor("fill", "white").setColor("stroke", cursorColour).circle(fourthX, fourthY,smallCircleRadius, normalLineThickness,false,true);
+      canvas.setColor("stroke", cursorColour).line(fourthX, fourthY + smallCircleRadius, fourthX, fourthY + smallCircleRadius/2);
+      canvas.setColor("stroke", cursorColour).line(fourthX, fourthY - smallCircleRadius, fourthX, fourthY - smallCircleRadius/2);
+      canvas.setColor("stroke", cursorColour).line(fourthX + smallCircleRadius, fourthY, fourthX + smallCircleRadius/2, fourthY);
+      canvas.setColor("stroke", cursorColour).line(fourthX - smallCircleRadius, fourthY, fourthX - smallCircleRadius/2, fourthY);
+
+      for(let opponentFrameCounter = 1; opponentFrameCounter < opponentTrail.length; opponentFrameCounter++){
+        canvas.setColor("fill", determineOpponentColour(noOfWins, noOfLosses, opponentCooldown, 0.1*(opponentTrail.length - opponentFrameCounter)/opponentTrail.length)).setColor("stroke", "blue").circle(opponentTrail[opponentFrameCounter][0], opponentTrail[opponentFrameCounter][1],smallCircleRadius, normalLineThickness,true,false);
+      }
       canvas.setColor("fill", opponentColor).setColor("stroke", "blue").circle(thirdX, thirdY,smallCircleRadius, normalLineThickness,true,false);
       canvas.setColor("fill", "grey").setColor("stroke", "purple").circle(thirdX, thirdY,tinyCircleRadius, extraThickLine/1.5,false,true);
+
+      canvas.setColor("fill", opponentColor).setColor("stroke", "blue").circle(thirdX, thirdY,smallCircleRadius, normalLineThickness,true,false);
+      canvas.setColor("fill", "grey").setColor("stroke", "purple").circle(thirdX, thirdY,tinyCircleRadius, extraThickLine/1.5,false,true);
+
+      for(let playerFrameCounter = 1; playerFrameCounter < playerTrail.length; playerFrameCounter++){
+        canvas.setColor("fill", determinePlayerColour(0.1*(playerTrail.length - playerFrameCounter)/playerTrail.length)).setColor("stroke", "green").circle(playerTrail[playerFrameCounter][0], playerTrail[playerFrameCounter][1],smallCircleRadius, normalLineThickness,true,false);
+      }
       canvas.setColor("fill", playerColor).setColor("stroke", "green").circle(secondX, secondY,smallCircleRadius, normalLineThickness,true,false);
       canvas.setColor("fill", "black").setColor("stroke", "green").circle(secondX, secondY,tinyCircleRadius, normalLineThickness,true,false);
   }
@@ -107,12 +157,15 @@ function Draw() {
     var width = cvs.width;
     var height = cvs.height;
 
+    playerTrail = [];
+    opponentTrail = [];
+
     const largestDimension = width > height ? width : height;
 
     const largeCircleRadius = largestDimension * (finishTimer / finishTimerDuration);
     const firstX = homeOriginX * width;
     const firstY = homeOriginY * height;
-    const color = gameResultWin ? userDefaultColor : gameResultLoss ? determineOpponentColour(noOfWins, noOfLosses, 0) : "grey";
+    const color = gameResultWin ? userDefaultColor : gameResultLoss ? determineOpponentColour(noOfWins, noOfLosses, 0, 1) : "grey";
     const normalLineThickness = 1;
 
     const canvas = new Canvas(cvs);
@@ -139,9 +192,10 @@ function Draw() {
     if(overlayTimerValue < 1){
       overlayTimerValue = 1;
     }
+    overlayTimerColorValue = Math.pow(overlayTimerColorValue, 1.5)
 
     const canvas = new Canvas(cvs);
-    canvas.textDrawBig(overlayTimerValue, width/2, height/2, "rgb(" + 255*overlayTimerColorValue + ", " + 255*overlayTimerColorValue + ", "+ 255*overlayTimerColorValue + ")");
+    canvas.textDrawBig(overlayTimerValue, width/2, height/2, "rgba(0,0,0,"+ overlayTimerColorValue +")");
   }
 
   this.canvasCoordinatesToCanvasRatio = function(coords){
