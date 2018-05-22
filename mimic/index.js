@@ -100,7 +100,6 @@ document.getElementById("progress-button").addEventListener("click", function(e)
     pageNumber = 0;
     howToPlayToMenuScreen();
   }
-
 });
 
 document.getElementById("play-again-button").addEventListener("click", function(e){
@@ -123,6 +122,14 @@ document.getElementById("how-to-play-button").addEventListener("click", function
   $("#canvas-overlay .card-text").html(contentText[pageNumber]);
   $("#canvas-overlay #progress-button").html(buttonText[pageNumber]);
   menuToHowToPlayScreen();
+});
+
+document.getElementById("menu-button").addEventListener("click", function(e){
+  e.preventDefault();
+  $("#canvas-overlay").show();
+  mimic.currentRound--;
+  cancelAnimationFrame(mimic.animationProcess);
+  howToPlayToMenuScreen();
 });
 
 var menuToHowToPlayScreen = function(){

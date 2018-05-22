@@ -31,6 +31,7 @@ function Mimic(){
   noOfGames: 0,
   currentRound: 0,
   currentGeneration:0,
+  animationProcess:null,
   currentPosition: [],
   currentOpponentPosition: [],
   trainingData: [],
@@ -77,7 +78,7 @@ function Mimic(){
       this.drawMovement();
 
       var thisGenetic = this;
-      requestAnimationFrame(function(){thisGenetic.duel() });
+      this.animationProcess = requestAnimationFrame(function(){thisGenetic.duel() });
     }else if(!isGenerationFinished && !isMatchFinished && isStart){
       this.animationTimer++
 
@@ -85,7 +86,7 @@ function Mimic(){
       this.drawPregameOverlay();
 
       var thisGenetic = this;
-      requestAnimationFrame(function(){thisGenetic.duel() });
+      this.animationProcess = requestAnimationFrame(function(){thisGenetic.duel() });
     } else if(!isGenerationFinished && this.finishTimer < this.finishTimerDuration){
       if(this.finishTimer === 0 && this.animationTimer >= this.timeLimit){
           this.gameResultWin = false;
@@ -97,7 +98,7 @@ function Mimic(){
       this.drawMovement();
 
       var thisGenetic = this;
-      requestAnimationFrame(function(){thisGenetic.duel() });
+      this.animationProcess = requestAnimationFrame(function(){thisGenetic.duel() });
     }else if(!isGenerationFinished){
       this.finishTimer = 0;
       this.drawMovement();
@@ -301,23 +302,27 @@ function Mimic(){
     draw.drawPregameOverlayText(pregameCountdownTimer, timerDifference);
   },
   evolve: function () {
+
+    document.getElementById("loading-icon").classList.remove("d-none");
+
     const learningRate = .3;
-    const noOfRepetitions = this.currentRound < 5 ? 500 : 250;
+    const noOfRepetitions = this.currentRound < 5 ? 300 : 250;
 
     this.currentGeneration++;
 
-    console.log(JSON.stringify(this.trainingData));
-
-    var trainer = new Trainer(this.opponentNetwork);
-      trainer.train(this.trainingData, {
+    var thisMimic = this;
+    setTimeout(function(){
+      var trainer = new Trainer(thisMimic.opponentNetwork);
+      trainer.train(thisMimic.trainingData, {
         rate: learningRate,
         iterations: noOfRepetitions,
         error: .005,
         shuffle: true,
         cost: Trainer.cost.MSE
-    });
+      });
+      document.getElementById("loading-icon").classList.add("d-none");
+    }, 50);
 
-    document.getElementById("play-again-button").disabled = false;
   }
 }
 }
