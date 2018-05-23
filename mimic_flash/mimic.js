@@ -11,9 +11,9 @@ function Mimic(){
   maxInitialDistance: 20,
   minDistance: 2.4,
   tagDistance: 1.8,
-  cooldownTimer: 50,
+  cooldownTimer: 20,
   startDelay: 100,
-  maxSpeed: 0.1,
+  maxSpeed: 0.3,
   playerCooldown: 0,
   opponentCooldown: 0,
   finishTimer: 0,
@@ -309,7 +309,7 @@ function Mimic(){
     document.getElementById("loading-icon").classList.remove("d-none");
 
     const learningRate = .3;
-    const noOfRepetitions = this.currentRound < 5 ? 400 : 350;
+    const noOfRepetitions = this.currentRound < 5 ? 600 : 500;
 
     this.currentGeneration++;
 

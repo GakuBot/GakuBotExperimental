@@ -64,11 +64,12 @@ const titleText = ["This is a machine learning game", "Rules:", "Movement", "How
 const contentText = ["You play. The AI learns.<br><br>After every round that you play, the AI looks at the decisions that you made and learns from them.<br><br> Then it uses this information to try and imitate the way that you play.",
 "<div class='mb-5'><div class='w-75 d-inline-block'>You are a yellow circle.</div><img class='w-20 ml-5p align-top' src='../images/player.png'></div>\
   <div class='mb-5'> <img class='w-20 mr-5p align-top'  src='../images/home.png'><div class='w-75 d-inline-block'>Your aim is to get home to the brown circle in the middle.</div></div>\
-  <div class='mb-5'><div class='w-75 d-inline-block'>You need to get home before your opponent, a pink circle. If the pink circle gets home first, you lose.</div><img class='w-20 ml-5p align-top' src='../images/opponent.png'></div>\
-  <div>If you touch or 'tag' your opponent, then the one of you who is closest to home when you touch is unable to move for a few seconds.</div>",
+  <div class='mb-5'><div class='w-65 d-inline-block'>You need to get home before your opponent, a giant green circle. If the green circle gets home first, you lose.</div><img class='w-30 ml-5p align-top' src='../images/hulk.png'></div>\
+  <div class='mb-5'>If you touch or 'tag' your opponent, then the one of you who is closest to home when you touch is unable to move for a few seconds.</div>\
+  <div class='mb-5'>This game gives a much bigger advantage to the opponent than GakuBot Mimic Classic mode, so if you find this move too difficult, try <a href='../mimic/mimic.html'>Classic mode here.</a></div>",
 "You move via tapping in the direction that you want to move in.<br><br> A yellow reticule should appear wherever you click on the screen.<br><br> Your yellow circle will move in that direction",
 "Will you make a beeline for the target? <br><br>Will you be agressive and first seek to subdue your opponent by tagging them before going towards the objective? <br><br>And what will the computer do?",
-"For more information, and other versions of Gakubot, see <a href='https://www.gakubot.com'>GakuBot.com</a>"];
+"For more information, and other versions of Gakubot, see <a class='btn btn-primary' href='https://www.gakubot.com'>GakuBot.com</a>"];
 const buttonText = ["Rules ▶", "Guide ▶", "Strategy ▶", "Versions ▶", "Menu"];
 
 let pageNumber = 0;

@@ -10,7 +10,8 @@ function Mimic(){
   timeSteps: 220,
   maxInitialDistance: 20,
   minDistance: 2.4,
-  tagDistance: 1.8,
+  tagDistance: 3.2,
+  minOpponentDistance: 3.7,
   cooldownTimer: 50,
   startDelay: 100,
   maxSpeed: 0.1,
@@ -226,8 +227,8 @@ function Mimic(){
         this.playerTagSuccesses += 1
     }
 
-    this.playerCooldown -= 1
-    this.opponentCooldown -= 1
+    this.playerCooldown -= 0.75
+    this.opponentCooldown -= 1.5
 
     if(this.playerCooldown < 1){
       this.currentPosition[0] = this.currentPosition[0] + output[0];
@@ -248,11 +249,11 @@ function Mimic(){
          || this.makeSimulationPositionARatio(this.currentOpponentPosition)[1] > (1 - this.screenYOffset + 0.03)
          || this.makeSimulationPositionARatio(this.currentOpponentPosition)[1] < -(this.screenYOffset + 0.03));
 
-    if(playerDistanceToOrigin < this.minDistance || opponentDistanceToOrigin < this.minDistance
+    if(playerDistanceToOrigin < this.minDistance || opponentDistanceToOrigin < this.minOpponentDistance
       || bothPlayerAndOpponentOffTheScreen){
       this.finishLoop = true;
 
-      if(opponentDistanceToOrigin < this.minDistance){
+      if(opponentDistanceToOrigin < this.minOpponentDistance){
         this.gameResultWin = false;
         this.gameResultLoss = true;
         this.noOfLosses += 1;
