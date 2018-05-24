@@ -17,6 +17,7 @@
       Peter Devine
   </author>
   
+  <gap:plugin name="phonegap-admob" source="npm"/>
   <allow-navigation href="*://*.gakubot.com/*" />
   <allow-navigation href="*://*.gakubot.com" />
   <allow-navigation href="*://gakubot.com/*" />

@@ -105,9 +105,12 @@ function Mimic(){
       this.prepareDuel();
     }else{
       this.finishTimer = 0;
-      roundOver();
-      this.evolve();
-      this.trainingData = [];
+      document.getElementById("loading-icon").classList.remove("d-none");
+      let thisMimic = this;
+      setTimeout(function(){
+        thisMimic.evolve();
+        roundOver();
+      },100)
     }
   },
   setInitialPositionValue: function(){
@@ -306,25 +309,22 @@ function Mimic(){
   },
   evolve: function () {
 
-    document.getElementById("loading-icon").classList.remove("d-none");
-
     const learningRate = .3;
-    const noOfRepetitions = this.currentRound < 5 ? 400 : 350;
+    const noOfRepetitions = 400;
 
     this.currentGeneration++;
 
-    var thisMimic = this;
-    setTimeout(function(){
-      var trainer = new Trainer(thisMimic.opponentNetwork);
-      trainer.train(thisMimic.trainingData, {
-        rate: learningRate,
-        iterations: noOfRepetitions,
-        error: .005,
-        shuffle: true,
-        cost: Trainer.cost.MSE
-      });
-      document.getElementById("loading-icon").classList.add("d-none");
-    }, 50);
+    for(let trainingReps = 0; trainingReps < noOfRepetitions; trainingReps++){
+      //shuffleArray(this.trainingData);
+      for(let trainingDataCounter = 0; trainingDataCounter < this.trainingData.length; trainingDataCounter++){
+        this.opponentNetwork.activate(this.trainingData[trainingDataCounter]["input"]);
+        this.opponentNetwork.propagate(learningRate, this.trainingData[trainingDataCounter]["output"]);
+      }
+    }
+
+    document.getElementById("loading-icon").classList.add("d-none");
+
+    this.trainingData = [];
 
   }
 }
@@ -345,4 +345,15 @@ function notNAElseZero(value){
   }else{
     return value
   }
+}
+
+function shuffleArray(a) {
+    var j, x, i;
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+    }
+    return a;
 }

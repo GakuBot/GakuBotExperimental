@@ -77,8 +77,11 @@ let pageNumberLimit = 4;
 var trainDataPlayHuman = function(){
   if(mimic.currentRound < 1){
     mimic.currentRound++;
-    mimic.evolve();
-    trainDataPlayHuman();
+    document.getElementById("loading-icon").classList.remove("d-none");
+    setTimeout(function(){
+      mimic.evolve();
+      trainDataPlayHuman();
+    }, 100);
   }else{
     mimic.setInitialPositionValue();
     mimic.prepareDuel();
@@ -109,6 +112,7 @@ document.getElementById("play-now-button").addEventListener("click", function(e)
   e.preventDefault();
   howToPlayToMenuScreen();
   $("#canvas-overlay").hide();
+  onResumeGame();
   trainDataPlayHuman();
 });
 
@@ -131,11 +135,13 @@ document.getElementById("menu-button").addEventListener("click", function(e){
 });
 
 var menuToHowToPlayScreen = function(){
+  onResumeGame();
   document.getElementById("game-menu").classList.add("d-none");
   document.getElementById("how-to-play-explanation").classList.remove("d-none");
 }
 
 var howToPlayToMenuScreen = function(){
+  onPauseGame();
   document.getElementById("how-to-play-explanation").classList.add("d-none");
   document.getElementById("game-menu").classList.remove("d-none");
 }

@@ -105,9 +105,12 @@ function Mimic(){
       this.prepareDuel();
     }else{
       this.finishTimer = 0;
-      roundOver();
-      this.evolve();
-      this.trainingData = [];
+      document.getElementById("loading-icon").classList.remove("d-none");
+      let thisMimic = this;
+      setTimeout(function(){
+        thisMimic.evolve();
+        roundOver();
+      },100)
     }
   },
   setInitialPositionValue: function(){
@@ -195,22 +198,26 @@ function Mimic(){
     output = limitValue(output, this.maxSpeed);
     opponentMovement = limitValue(opponentMovement, this.maxSpeed);
 
-    let inputTrainingStimuli = [];
-    inputTrainingStimuli.push(this.currentPosition[0]);
-    inputTrainingStimuli.push(this.currentPosition[1]);
-    inputTrainingStimuli.push(this.currentOpponentPosition[0]);
-    inputTrainingStimuli.push(this.currentOpponentPosition[1]);
-    inputTrainingStimuli.push(relativeOpponentPosition[0]);
-    inputTrainingStimuli.push(relativeOpponentPosition[1]);
+    if(this.playerCooldown < 1){
 
-    let givenOutput = output.slice();
-    givenOutput[0] = (givenOutput[0] / (2 * this.maxSpeed)) + 0.5;
-    givenOutput[1] = (givenOutput[1] / (2 * this.maxSpeed)) + 0.5;
+      let inputTrainingStimuli = [];
+      inputTrainingStimuli.push(this.currentPosition[0]);
+      inputTrainingStimuli.push(this.currentPosition[1]);
+      inputTrainingStimuli.push(this.currentOpponentPosition[0]);
+      inputTrainingStimuli.push(this.currentOpponentPosition[1]);
+      inputTrainingStimuli.push(relativeOpponentPosition[0]);
+      inputTrainingStimuli.push(relativeOpponentPosition[1]);
 
-    this.trainingData.push({
-      input: inputTrainingStimuli,
-      output: givenOutput
-    });
+      let givenOutput = output.slice();
+      givenOutput[0] = (givenOutput[0] / (2 * this.maxSpeed)) + 0.5;
+      givenOutput[1] = (givenOutput[1] / (2 * this.maxSpeed)) + 0.5;
+
+      this.trainingData.push({
+        input: inputTrainingStimuli,
+        output: givenOutput
+      });
+
+    }
 
     const playerAndOpponentXDiff = this.currentPosition[0] - this.currentOpponentPosition[0];
     const playerAndOpponentYDiff = this.currentPosition[1] - this.currentOpponentPosition[1];
@@ -309,22 +316,21 @@ function Mimic(){
     document.getElementById("loading-icon").classList.remove("d-none");
 
     const learningRate = .3;
-    const noOfRepetitions = this.currentRound < 5 ? 600 : 500;
+    const noOfRepetitions = 600;
 
     this.currentGeneration++;
 
-    var thisMimic = this;
-    setTimeout(function(){
-      var trainer = new Trainer(thisMimic.opponentNetwork);
-      trainer.train(thisMimic.trainingData, {
-        rate: learningRate,
-        iterations: noOfRepetitions,
-        error: .005,
-        shuffle: true,
-        cost: Trainer.cost.MSE
-      });
-      document.getElementById("loading-icon").classList.add("d-none");
-    }, 50);
+    for(let trainingReps = 0; trainingReps < noOfRepetitions; trainingReps++){
+      //shuffleArray(this.trainingData);
+      for(let trainingDataCounter = 0; trainingDataCounter < this.trainingData.length; trainingDataCounter++){
+        this.opponentNetwork.activate(this.trainingData[trainingDataCounter]["input"]);
+        this.opponentNetwork.propagate(learningRate, this.trainingData[trainingDataCounter]["output"]);
+      }
+    }
+
+    document.getElementById("loading-icon").classList.add("d-none");
+
+    this.trainingData = [];
 
   }
 }
