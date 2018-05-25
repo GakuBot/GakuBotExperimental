@@ -1,5 +1,6 @@
+//https://github.com/appfeel/admob-phonegap-build-demo
+
 function onDeviceReady() {
-  alert("onDeviceReady");
   document.removeEventListener('deviceready', onDeviceReady, false);
 
   // Set AdMobAds options:
@@ -13,6 +14,5 @@ function onDeviceReady() {
   alert("createBannerView");
   admob.createBannerView();
 }
-alert("OUTSIDE TEST");
 
 document.addEventListener("deviceready", onDeviceReady, false);
