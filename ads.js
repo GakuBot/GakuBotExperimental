@@ -1,4 +1,5 @@
 function onDeviceReady() {
+  alert("onDeviceReady");
   document.removeEventListener('deviceready', onDeviceReady, false);
 
   // Set AdMobAds options:
