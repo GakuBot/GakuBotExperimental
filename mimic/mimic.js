@@ -310,7 +310,7 @@ function Mimic(){
   evolve: function () {
 
     const learningRate = .3;
-    const noOfRepetitions = 400;
+    const noOfRepetitions = 800;
 
     this.currentGeneration++;
 
