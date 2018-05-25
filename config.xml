@@ -16,8 +16,8 @@
   <author href="https://www.gakubot.com" email="gakubot.ai@gmail.com">
       Peter Devine
   </author>
-  
-  <gap:plugin name="phonegap-admob" source="npm"/>
+
+  <gap:plugin name="com-admob-plugin" version="5.3.1" source="npm"/>
   <allow-navigation href="*://*.gakubot.com/*" />
   <allow-navigation href="*://*.gakubot.com" />
   <allow-navigation href="*://gakubot.com/*" />
