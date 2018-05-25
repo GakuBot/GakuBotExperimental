@@ -13,5 +13,6 @@ function onDeviceReady() {
   alert("createBannerView");
   admob.createBannerView();
 }
+alert("OUTSIDE TEST");
 
 document.addEventListener("deviceready", onDeviceReady, false);
