@@ -57,16 +57,7 @@ function Mimic(){
 
   },
   duel: function(){
-    let isGenerationFinished;
-    isGenerationFinished = this.currentRound % 5 == 0;
-    if(this.currentRound == 5){
-      this.currentRound = 6;
-      isGenerationFinished = true;
-    }
-
-    if(this.currentRound < 5){
-      isGenerationFinished = false;
-    }
+    const isGenerationFinished = this.currentRound % 6 == 0;
 
     const isMatchFinished = this.animationTimer >= this.timeLimit || this.finishLoop;
     const isStart = this.animationTimer < this.startDelay;
@@ -116,10 +107,11 @@ function Mimic(){
   setInitialPositionValue: function(){
     let playerStartingBearing;
     if(screenRatio > 1){
-      playerStartingBearing = 3 * Math.PI/2 + (Math.PI/10) * (Math.round(4 * Math.random()) - 2);
+      playerStartingBearing = 3 * Math.PI/2 + (Math.random()*Math.PI/10) * (Math.round(4 * Math.random()) - 2);
     }else{
-      playerStartingBearing = 3 * Math.PI/2 + (Math.PI/10) * (Math.round(2 * Math.random()) - 1);
+      playerStartingBearing = 3 * Math.PI/2 + (Math.random()*Math.PI/10) * (Math.round(2 * Math.random()) - 1);
     }
+    console.log(playerStartingBearing);
     const opponentStartingBearingPlusMinus = playerStartingBearing > 3 * Math.PI/2 ? -1 : 1;
     const opponentStartingBearing = playerStartingBearing + opponentStartingBearingPlusMinus * (Math.PI / 10);
 
@@ -198,22 +190,24 @@ function Mimic(){
     output = limitValue(output, this.maxSpeed);
     opponentMovement = limitValue(opponentMovement, this.maxSpeed);
 
-    let inputTrainingStimuli = [];
-    inputTrainingStimuli.push(this.currentPosition[0]);
-    inputTrainingStimuli.push(this.currentPosition[1]);
-    inputTrainingStimuli.push(this.currentOpponentPosition[0]);
-    inputTrainingStimuli.push(this.currentOpponentPosition[1]);
-    inputTrainingStimuli.push(relativeOpponentPosition[0]);
-    inputTrainingStimuli.push(relativeOpponentPosition[1]);
+    if(this.playerCooldown < 1){
+      let inputTrainingStimuli = [];
+      inputTrainingStimuli.push(this.currentPosition[0]);
+      inputTrainingStimuli.push(this.currentPosition[1]);
+      inputTrainingStimuli.push(this.currentOpponentPosition[0]);
+      inputTrainingStimuli.push(this.currentOpponentPosition[1]);
+      inputTrainingStimuli.push(relativeOpponentPosition[0]);
+      inputTrainingStimuli.push(relativeOpponentPosition[1]);
 
-    let givenOutput = output.slice();
-    givenOutput[0] = (givenOutput[0] / (2 * this.maxSpeed)) + 0.5;
-    givenOutput[1] = (givenOutput[1] / (2 * this.maxSpeed)) + 0.5;
+      let givenOutput = output.slice();
+      givenOutput[0] = (givenOutput[0] / (2 * this.maxSpeed)) + 0.5;
+      givenOutput[1] = (givenOutput[1] / (2 * this.maxSpeed)) + 0.5;
 
-    this.trainingData.push({
-      input: inputTrainingStimuli,
-      output: givenOutput
-    });
+      this.trainingData.push({
+        input: inputTrainingStimuli,
+        output: givenOutput
+      });
+    }
 
     const playerAndOpponentXDiff = this.currentPosition[0] - this.currentOpponentPosition[0];
     const playerAndOpponentYDiff = this.currentPosition[1] - this.currentOpponentPosition[1];
@@ -309,8 +303,8 @@ function Mimic(){
   },
   evolve: function () {
 
-    const learningRate = .1;
-    const noOfRepetitions = 1600;
+    const learningRate = .05;
+    const noOfRepetitions = 400;
 
     this.currentGeneration++;
 
